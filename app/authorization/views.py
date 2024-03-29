@@ -31,12 +31,12 @@ def reg(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         payload = {
-        "name":data.get('name'),
-        "password":data.get('password')
+        "name": str(data.get('name')),
+        "password":str(data.get('password'))
         }
         secret_key = str(get_random_secret_key)
-        token = jwt.encode(payload, secret_key, algorithm='HS256')
-
+        token = str(jwt.encode(payload, secret_key, algorithm='HS256'))
+        icon = ''
         # a = cursor.execute("SELECT * FROM Users WHERE username = ?", (username))
         a = cursor.execute(f"SELECT * FROM Users WHERE username = '{payload['name']}'")
         rand = a.fetchone()
@@ -44,7 +44,7 @@ def reg(request):
             return HttpResponse('такой пользователь уже есть')
 
         else:
-            db_table_val(payload['name'], payload['password'], token)
+            db_table_val(payload['name'], payload['password'], token, icon)
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
             response.status_code = 200
@@ -60,26 +60,26 @@ def reg(request):
     
 @csrf_exempt
 def authorization(request):
-    token = request.COOKIES.get('jwt')
+    token = str(request.COOKIES.get('jwt'))
     a = cursor.execute(f"SELECT * FROM Users WHERE key = '{token}'")
     rand = a.fetchone()
     if rand:
-        response = JsonResponse({'response':'success'})
+        response = JsonResponse({'response':'have token'})
         response.status_code = 200
-        return response
-        
-    if not token:
+        return response  
+    else:
         data = json.loads(request.body)
         payload = {
-        "name":data.get('name'),
-        "password":data.get('password')
+        "name": str(data.get('name')),
+        "password": str(data.get('password'))
         }
         secret_key = str(get_random_secret_key)
         token = jwt.encode(payload, secret_key, algorithm='HS256')
-        i = cursor.execute("SELECT password FROM Users WHERE username = ?", (payload['name'],))
+        i = cursor.execute(f"SELECT password FROM Users WHERE username = '{payload['name']}'")
         getpass = i.fetchone()
-        if payload['password'] == getpass:
-            cursor.execute(f'UPDATE Users SET key = {token} WHERE username = {payload["name"]}')
+        if (payload['password'] == getpass[0]):
+            cursor.execute(f"UPDATE Users SET key = '{token}' WHERE username = '{payload['name']}'")
+            conn.commit()
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
             response.status_code = 200
@@ -90,8 +90,8 @@ def authorization(request):
             return response
 
 
-def db_table2_val(tournir_id: int, tournir_name: int, ):
-    cursor.execute('INSERT INTO Users (username, tournir_name, , players, icon) VALUES (?, ?, ?, ?, ?, ?, ?)', ())
+def db_table2_val(username:str, tournir_name:str, admin:str, players:str, prize:str, place:str, total_tours:int):
+    cursor.execute('INSERT INTO Users (username, tournir_name, admin, players, prize, place, total_tours) VALUES (?, ?, ?, ?, ?, ?, ?)', (username, tournir_name, admin, players, prize, place, total_tours))
     conn.commit()
 def tournir(request):
     cursor.execute("""CREATE TABLE IF NOT EXISTS Tournirs( 
@@ -105,8 +105,11 @@ def tournir(request):
     """)
     data = json.loads(request.body)
     payload = {
-        "name":data.get('name'),
-        "password":data.get('password')
+        "admin":data.get('admin'),
+        "players":data.get('players'),
+        "prize":data.get('prize'),
+        "place":data.get('place'),
+        "total_tours":data.get('tours')
         }
     
 
