@@ -44,8 +44,7 @@ def reg(request):
             return HttpResponse('такой пользователь уже есть')
 
         else:
-            icon = ''
-            db_table_val(payload['name'], payload['password'], token, icon)
+            db_table_val(payload['name'], payload['password'], token)
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
             response.status_code = 200
@@ -91,18 +90,18 @@ def authorization(request):
             return response
 
 
-def db_table2_val(username: str, tournirname: str, admin: str, players: str, icon: bytes):
-    cursor.execute('INSERT INTO Users (username, tournir_name, , players, icon) VALUES (?, ?, ?, ?, ?)', (username, tournirname, admin, players, icon))
+def db_table2_val(tournir_id: int, tournir_name: int, ):
+    cursor.execute('INSERT INTO Users (username, tournir_name, , players, icon) VALUES (?, ?, ?, ?, ?, ?, ?)', ())
     conn.commit()
 def tournir(request):
     cursor.execute("""CREATE TABLE IF NOT EXISTS Tournirs( 
-    id INTEGER PRIMARY KEY,
-    username TEXT PRIMARY KEY,
     tournir_id INTEGER PRIMARY KEY,
     tournir_name TEXT,
-     TEXT,
+    admin TEXT,
     players TEXT,
-    icon BLOB);
+    prize TEXT,
+    place TEXT,
+    total_tours INTEGER);
     """)
     data = json.loads(request.body)
     payload = {
