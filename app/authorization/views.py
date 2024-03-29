@@ -8,34 +8,6 @@ import jwt
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-# class JWTMiddleware:
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         jwt_token = request.COOKIES.get('jwt')
-
-#         if jwt_token:
-#             try:
-#                 payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=['HS256'])
-#                 request.user = Users.objects.get(id=payload['user_id'])
-#             except jwt.ExpiredSignatureError:
-#                 pass
-#             except jwt.InvalidTokenError:
-#                 pass
-
-#         response = self.get_response(request)
-#         return response
-
-
-
-
-
-
-
-
-
-
 
 
 conn = sqlite3.connect('db.sqlite3', check_same_thread=False)
@@ -43,20 +15,19 @@ cursor = conn.cursor()
 #подключение базы данных
 cursor.execute("""CREATE TABLE IF NOT EXISTS Users( 
     id INTEGER PRIMARY KEY,
-    username TEXT,
+    username TEXT PRIMARY KEY,
     password TEXT,
-    admin TEXT,
-    key TEXT);
+    key TEXT,
+    icon BLOB);
 """)
-def db_table_val(username: str, password: str, admin: str, key: str):
-    cursor.execute('INSERT INTO Users (username, password, admin, key) VALUES (?, ?, ?, ?)', (username, password, admin, key))
+def db_table_val(username: str, password: str, key: str, icon: bytes = None):
+    cursor.execute('INSERT INTO Users (username, password, key, icon) VALUES (?, ?, ?, ?)', (username, password, key, icon))
     conn.commit()
 
 @csrf_exempt
 def reg(request):
     # username = str(request.POST.get("username"))
     # password = str(request.POST.get("password"))
-    admin = 'false'
 
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -74,7 +45,9 @@ def reg(request):
             return HttpResponse('такой пользователь уже есть')
 
         else:
-            db_table_val(payload['name'], payload['password'], admin, token)
+            # with open("C:\Users\vkabi\Downloads\ball.png", 'rb') as picture:
+            #     icon = picture.read()
+            # db_table_val(payload['name'], payload['password'], admin, token, icon)
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
             response.status_code = 200
@@ -119,4 +92,24 @@ def authorization(request):
             response.status_code = 400
             return response
 
-   
+
+def db_table2_val(username: str, tournirname: str, admin: str, players: str, icon: bytes):
+    cursor.execute('INSERT INTO Users (username, tournir_name, , players, icon) VALUES (?, ?, ?, ?, ?)', (username, tournirname, admin, players, icon))
+    conn.commit()
+def tournir(request):
+    cursor.execute("""CREATE TABLE IF NOT EXISTS Tournirs( 
+    id INTEGER PRIMARY KEY,
+    username TEXT PRIMARY KEY,
+    tournir_id INTEGER PRIMARY KEY,
+    tournir_name TEXT,
+     TEXT,
+    players TEXT,
+    icon BLOB);
+    """)
+    data = json.loads(request.body)
+    payload = {
+        "name":data.get('name'),
+        "password":data.get('password')
+        }
+    
+
