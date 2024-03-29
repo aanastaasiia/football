@@ -77,7 +77,7 @@ def authorization(request):
         token = jwt.encode(payload, secret_key, algorithm='HS256')
         i = cursor.execute(f"SELECT password FROM Users WHERE username = '{payload['name']}'")
         getpass = i.fetchone()
-        if (payload['password'] == getpass[0]):
+        if getpass and (payload['password'] == getpass[0]):
             cursor.execute(f"UPDATE Users SET key = '{token}' WHERE username = '{payload['name']}'")
             conn.commit()
             response = JsonResponse({'response':'success'})
@@ -90,9 +90,11 @@ def authorization(request):
             return response
 
 
-def db_table2_val(username:str, tournir_name:str, admin:str, players:str, prize:str, place:str, total_tours:int):
-    cursor.execute('INSERT INTO Users (username, tournir_name, admin, players, prize, place, total_tours) VALUES (?, ?, ?, ?, ?, ?, ?)', (username, tournir_name, admin, players, prize, place, total_tours))
+def db_table2_val(tournir_name:str, admin:str, players:str, prize:str, place:str, total_tours:int):
+    cursor.execute('INSERT INTO Tournirs (tournir_name, admin, players, prize, place, total_tours) VALUES (?, ?, ?, ?, ?, ?)', (tournir_name, admin, players, prize, place, total_tours))
     conn.commit()
+
+@csrf_exempt
 def tournir(request):
     cursor.execute("""CREATE TABLE IF NOT EXISTS Tournirs( 
     tournir_id INTEGER PRIMARY KEY,
@@ -105,11 +107,14 @@ def tournir(request):
     """)
     data = json.loads(request.body)
     payload = {
-        "admin":data.get('admin'),
-        "players":data.get('players'),
-        "prize":data.get('prize'),
-        "place":data.get('place'),
-        "total_tours":data.get('tours')
+        "tournir_name":str(data.get('tournir_name')),
+        "admin":str(data.get('admin')),
+        "players":str(data.get('players')),
+        "prize":str(data.get('prize')),
+        "place":str(data.get('place')),
+        "total_tours": int(data.get('tours'))
         }
+    db_table2_val(payload["tournir_name"], payload["admin"], payload["players"], payload["prize"], payload["place"], payload["total_tours"])
+    conn.commit()
     
 
