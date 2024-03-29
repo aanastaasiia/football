@@ -10,11 +10,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
-conn = sqlite3.connect('db.sqlite3', check_same_thread=False)
+conn = sqlite3.connect('football.db', check_same_thread=False)
 cursor = conn.cursor()
 #подключение базы данных
 cursor.execute("""CREATE TABLE IF NOT EXISTS Users( 
-    id INTEGER PRIMARY KEY,
     username TEXT PRIMARY KEY,
     password TEXT,
     key TEXT,
@@ -45,9 +44,8 @@ def reg(request):
             return HttpResponse('такой пользователь уже есть')
 
         else:
-            # with open("C:\Users\vkabi\Downloads\ball.png", 'rb') as picture:
-            #     icon = picture.read()
-            # db_table_val(payload['name'], payload['password'], admin, token, icon)
+            icon = ''
+            db_table_val(payload['name'], payload['password'], token, icon)
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
             response.status_code = 200
