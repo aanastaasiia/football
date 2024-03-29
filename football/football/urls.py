@@ -18,11 +18,17 @@ from django.contrib import admin
 from django.urls import path
 from main import views
 import sqlite3
+from rest_framework_swagger.views import get_swagger_view
+from django.urls import path, include, re_path
+import re
 
 
+schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('registration/', views.registration),
-    path('mainpage', views.sendform)
+    path('mainpage', views.sendform),
+    #path('swagger', schema_view), #http://127.0.0.1:8000/#/
+    path(r'^auth/', include('djoser.urls')),
 ]
