@@ -5,5 +5,6 @@ from authorization import views
 urlpatterns = [
     path('reg', views.reg),
     path('auth', views.authorization),
-    path('tournir', views.tournir)
+    path('maketournir', views.maketournir),
+    path('endtour', views.endtour)
 ]

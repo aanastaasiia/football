@@ -78,7 +78,7 @@ def authorization(request):
         i = cursor.execute(f"SELECT password FROM Users WHERE username = '{payload['name']}'")
         getpass = i.fetchone()
         if getpass and (payload['password'] == getpass[0]):
-            cursor.execute(f"UPDATE Users SET key = '{token}' WHERE username = '{payload['name']}'")
+            cursor.execute("UPDATE Users SET key = %s WHERE username = %s", (token, payload['name']))
             conn.commit()
             response = JsonResponse({'response':'success'})
             response.set_cookie('jwt',token)
@@ -90,12 +90,12 @@ def authorization(request):
             return response
 
 
-def db_table2_val(tournir_name:str, admin:str, players:str, prize:str, place:str, total_tours:int):
+def db_table2_val(tournir_name:str, admin:str, players:str, prize:str, place:str, total_tours:str):
     cursor.execute('INSERT INTO Tournirs (tournir_name, admin, players, prize, place, total_tours) VALUES (?, ?, ?, ?, ?, ?)', (tournir_name, admin, players, prize, place, total_tours))
     conn.commit()
 
 @csrf_exempt
-def tournir(request):
+def maketournir(request):
     cursor.execute("""CREATE TABLE IF NOT EXISTS Tournirs( 
     tournir_id INTEGER PRIMARY KEY,
     tournir_name TEXT,
@@ -103,7 +103,7 @@ def tournir(request):
     players TEXT,
     prize TEXT,
     place TEXT,
-    total_tours INTEGER);
+    total_tours TEXT);
     """)
     data = json.loads(request.body)
     payload = {
@@ -112,9 +112,13 @@ def tournir(request):
         "players":str(data.get('players')),
         "prize":str(data.get('prize')),
         "place":str(data.get('place')),
-        "total_tours": int(data.get('tours'))
+        "total_tours": str(data.get('total_tours'))
         }
     db_table2_val(payload["tournir_name"], payload["admin"], payload["players"], payload["prize"], payload["place"], payload["total_tours"])
     conn.commit()
-    
+    response = JsonResponse({'congrats':'game created'})
+    response.status_code = 200
+    return response
 
+def endtour(request):
+    pass
