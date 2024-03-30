@@ -160,13 +160,22 @@ def endtour(request):
 
 @csrf_exempt
 def tournirs(request):
-    response = JsonResponse({"tour":[{"name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
-                            {"name": "фатальная схватка", "status":"запланирован", "number":16, "date":"15.04.2024"},
-                            {"name": "крутое сражение", "status":"завершенный", "number":16, "date":"30.03.2024"},
-                            {"name": "жесткий матч", "status":"завершенный", "number":8, "date":"25.03.2024"},
-                            {"name": "футбольная баталия", "status":"запланированный", "number":32, "date":"17.04.2024"},
-                            {"name": "роковой футбол", "status":"завершенный", "number":4, "date":"23.02.2024"},
-                            {"name": "смертельный бой", "status":"завершенный", "number":2, "date":"21.02.2024"},
-                            {"name": "спортивное столкновение", "status":"запланированный", "number":4, "date":"12.01.2024"} ]})
+    response = JsonResponse({"tour":[{"id":1, "name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
+                            {"id":2,"name": "фатальная схватка", "status":"запланирован", "number":16, "date":"15.04.2024"},
+                            {"id":3,"name": "крутое сражение", "status":"завершенный", "number":16, "date":"30.03.2024"},
+                            {"id":4,"name": "жесткий матч", "status":"завершенный", "number":8, "date":"25.03.2024"},
+                            {"id":5,"name": "футбольная баталия", "status":"запланированный", "number":32, "date":"17.04.2024"},
+                            {"id":6,"name": "роковой футбол", "status":"завершенный", "number":4, "date":"23.02.2024"},
+                            {"id":7,"name": "смертельный бой", "status":"завершенный", "number":2, "date":"21.02.2024"},
+                            {"id":8,"name": "спортивное столкновение", "status":"запланированный", "number":4, "date":"12.01.2024"} ]})
+    response.status_code = 200
+    return response
+
+
+@csrf_exempt
+def lasttournirs(request):
+    response = JsonResponse({"id":1,"tour":[{"name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
+                            {"id":2,"name": "фатальная схватка", "status":"запланирован", "number":16, "date":"15.04.2024"},
+                            {"id":3,"name": "крутое сражение", "status":"завершенный", "number":16, "date":"30.03.2024"},]})
     response.status_code = 200
     return response

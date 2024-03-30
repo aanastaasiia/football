@@ -7,5 +7,6 @@ urlpatterns = [
     path('auth', views.authorization),
     path('maketournir', views.maketournir),
     path('endtour', views.endtour),
-    path('tournirs', views.tournirs)
+    path('tournirs', views.tournirs),
+    path('lasttournirs', views.lasttournirs)
 ]
