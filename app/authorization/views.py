@@ -45,16 +45,21 @@ def reg(request):
         a = cursor.execute(f"SELECT * FROM Users WHERE username = '{payload['name']}'")
         rand = a.fetchone()
         if rand:
-            return HttpResponse("такой пользователь уже есть")
+            response = JsonResponse({"error": "already exist"})
+            response.status_code = 400
+            return response
+
 
         else:
             db_table_val(payload["name"], payload["password"], token, icon, win_cnt)
             response = JsonResponse({"response": "success"})
-            response.set_cookie("jwt", token)
+            response.set_cookie("jwt", token, expires=3600, samesite="lax")
             response.status_code = 200
             return response
     else:
-        return JsonResponse({"error": "only post"})
+        response = JsonResponse({"error": "only post"})
+        response.status_code = 400
+        return response
 
 
 @csrf_exempt
@@ -81,7 +86,7 @@ def authorization(request):
             )
             conn.commit()
             response = JsonResponse({"response": "success"})
-            response.set_cookie("jwt", token)
+            response.set_cookie("jwt", token, expires=3600, samesite="lax")
             response.status_code = 200
             return response
         else:
@@ -136,7 +141,7 @@ def maketournir(request):
         payload["total_tours"],
     )
     conn.commit()
-    response = JsonResponse({"congrats": "game created"})
+    response = JsonResponse([{"congrats": "game created"}])
     response.status_code = 200
     return response
 
@@ -151,3 +156,17 @@ def endtour(request):
         cursor.execute(f"UPDATE Users SET win_cnt = {win_cnt} WHERE username = '{i}'")
     conn.commit()
     return HttpResponse("колво побед увеличилось")
+
+
+@csrf_exempt
+def tournirs(request):
+    response = JsonResponse({"tour":[{"name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
+                            {"name": "фатальная схватка", "status":"запланирован", "number":16, "date":"15.04.2024"},
+                            {"name": "крутое сражение", "status":"завершенный", "number":16, "date":"30.03.2024"},
+                            {"name": "жесткий матч", "status":"завершенный", "number":8, "date":"25.03.2024"},
+                            {"name": "футбольная баталия", "status":"запланированный", "number":32, "date":"17.04.2024"},
+                            {"name": "роковой футбол", "status":"завершенный", "number":4, "date":"23.02.2024"},
+                            {"name": "смертельный бой", "status":"завершенный", "number":2, "date":"21.02.2024"},
+                            {"name": "спортивное столкновение", "status":"запланированный", "number":4, "date":"12.01.2024"} ]})
+    response.status_code = 200
+    return response
