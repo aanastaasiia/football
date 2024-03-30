@@ -174,7 +174,7 @@ def tournirs(request):
 
 @csrf_exempt
 def lasttournirs(request):
-    response = JsonResponse({"id":1,"tour":[{"name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
+    response = JsonResponse({"tour":[{"id":1,"name": "эпичная битва", "status":"запланирован", "number":32, "date":"30.04.2024"},
                             {"id":2,"name": "фатальная схватка", "status":"запланирован", "number":16, "date":"15.04.2024"},
                             {"id":3,"name": "крутое сражение", "status":"завершенный", "number":16, "date":"30.03.2024"},]})
     response.status_code = 200
